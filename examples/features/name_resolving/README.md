@@ -1,15 +1,19 @@
-# Name resolving
+# Name resolving(命名解析)
 
 This examples shows how `ClientConn` can pick different name resolvers.
+该示例展示了`ClientConn`如何选择不同的命名解析器(name resolvers)。
 
-## What is a name resolver
+## What is a name resolver(命名解析器)
 
 A name resolver can be seen as a `map[service-name][]backend-ip`. It takes a
 service name, and returns a list of IPs of the backends. A common used name
 resolver is DNS.
+一个命名解析器可以被视为一个(以service name作为键，以实际后端服务ip地址列表作为值的)map映射`map[service-name][]backend-ip`。
+它可以通过一个服务名，来获取该服务名对应的实际后端服务的IP地址列表。DNS就是一个通用的命名解析器。
 
 In this example, a resolver is created to resolve `resolver.example.grpc.io` to
 `localhost:50051`.
+在该示例中，创建了一个用来将`resolver.example.grpc.io`解析为`localhost:50051`的命名解析器。
 
 ## Try it
 
