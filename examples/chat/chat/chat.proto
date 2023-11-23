@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "google.golang.org/grpc/examples/chat/chat";
+
+package chat;
+
+message FromClient {
+
+    string name = 1;
+    string body = 2;
+}
+
+message FromServer {
+
+    string name = 1;
+    string body = 2; 
+}
+
+service Chat {
+    rpc ChatService(stream FromClient) returns (stream FromServer){};
+}
