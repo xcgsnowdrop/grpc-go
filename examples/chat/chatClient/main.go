@@ -17,9 +17,9 @@ import (
 
 var addr = flag.String("addr", "localhost:50051", "the address to connect to")
 
-// clienthandle封装chatserver.Services_ChatServiceClient和客户端名
+// clienthandle封装pb.Chat_SayServer和客户端名
 type clienthandle struct {
-	stream     pb.Chat_ChatServiceClient
+	stream     pb.Chat_SayClient
 	clientName string
 }
 
@@ -87,7 +87,7 @@ func main() {
 	c := pb.NewChatClient(conn)
 
 	// 调用客户端的ChatService获取到一个封装了grpc.ClientStream的stream对象
-	stream, err := c.ChatService(context.Background())
+	stream, err := c.Say(context.Background())
 	if err != nil {
 		log.Fatalf("error creating stream: %v", err)
 	}

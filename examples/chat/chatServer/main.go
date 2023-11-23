@@ -36,8 +36,7 @@ type server struct {
 	pb.UnimplementedChatServer
 }
 
-// ChatService implements chat.chatServer
-func (s *server) ChatService(stream pb.Chat_ChatServiceServer) error {
+func (s *server) Say(stream pb.Chat_SayServer) error {
 
 	clientUniqueCode := rand.Intn(1e6)
 	errch := make(chan error)
@@ -53,7 +52,7 @@ func (s *server) ChatService(stream pb.Chat_ChatServiceServer) error {
 
 // receive messages
 // 聊天服务器侧，从客户端接收消息，即从grpc.ServerStream中接收来自客户端的消息
-func receiveFromStream(stream pb.Chat_ChatServiceServer, clientUniqueCode_ int, errch_ chan error) {
+func receiveFromStream(stream pb.Chat_SayServer, clientUniqueCode_ int, errch_ chan error) {
 
 	// 循环接收来自客户端的消息，保存到消息队列MQue中
 	for {
@@ -83,7 +82,7 @@ func receiveFromStream(stream pb.Chat_ChatServiceServer, clientUniqueCode_ int, 
 
 // send message
 // 聊天服务器侧，向客户端发送消息，即向grpc.ServerStream发送消息
-func sendToStream(stream pb.Chat_ChatServiceServer, clientUniqueCode_ int, errch_ chan error) {
+func sendToStream(stream pb.Chat_SayServer, clientUniqueCode_ int, errch_ chan error) {
 
 	// 循环
 	for {

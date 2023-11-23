@@ -5,17 +5,26 @@ option go_package = "google.golang.org/grpc/examples/chat/chat";
 package chat;
 
 message FromClient {
-
     string name = 1;
     string body = 2;
 }
 
 message FromServer {
-
     string name = 1;
     string body = 2; 
 }
 
+message JoinRoomRequest {
+    string room = 1;
+    string username = 2;
+}
+
+message JoinRoomReply {
+    bool result = 1;
+    string  error = 2;
+}
+
 service Chat {
-    rpc ChatService(stream FromClient) returns (stream FromServer){};
+    rpc JoinRoom (JoinRoomRequest) returns (JoinRoomReply) {};
+    rpc Say(stream FromClient) returns (stream FromServer) {};
 }

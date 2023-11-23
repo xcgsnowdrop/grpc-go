@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Chat_ChatService_FullMethodName = "/chat.Chat/ChatService"
+	Chat_JoinRoom_FullMethodName = "/chat.Chat/JoinRoom"
+	Chat_Say_FullMethodName      = "/chat.Chat/Say"
 )
 
 // ChatClient is the client API for Chat service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatClient interface {
-	ChatService(ctx context.Context, opts ...grpc.CallOption) (Chat_ChatServiceClient, error)
+	JoinRoom(ctx context.Context, in *JoinRoomRequest, opts ...grpc.CallOption) (*JoinRoomReply, error)
+	Say(ctx context.Context, opts ...grpc.CallOption) (Chat_SayClient, error)
 }
 
 type chatClient struct {
@@ -37,30 +39,39 @@ func NewChatClient(cc grpc.ClientConnInterface) ChatClient {
 	return &chatClient{cc}
 }
 
-func (c *chatClient) ChatService(ctx context.Context, opts ...grpc.CallOption) (Chat_ChatServiceClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Chat_ServiceDesc.Streams[0], Chat_ChatService_FullMethodName, opts...)
+func (c *chatClient) JoinRoom(ctx context.Context, in *JoinRoomRequest, opts ...grpc.CallOption) (*JoinRoomReply, error) {
+	out := new(JoinRoomReply)
+	err := c.cc.Invoke(ctx, Chat_JoinRoom_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &chatChatServiceClient{stream}
+	return out, nil
+}
+
+func (c *chatClient) Say(ctx context.Context, opts ...grpc.CallOption) (Chat_SayClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Chat_ServiceDesc.Streams[0], Chat_Say_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &chatSayClient{stream}
 	return x, nil
 }
 
-type Chat_ChatServiceClient interface {
+type Chat_SayClient interface {
 	Send(*FromClient) error
 	Recv() (*FromServer, error)
 	grpc.ClientStream
 }
 
-type chatChatServiceClient struct {
+type chatSayClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatChatServiceClient) Send(m *FromClient) error {
+func (x *chatSayClient) Send(m *FromClient) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *chatChatServiceClient) Recv() (*FromServer, error) {
+func (x *chatSayClient) Recv() (*FromServer, error) {
 	m := new(FromServer)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -72,7 +83,8 @@ func (x *chatChatServiceClient) Recv() (*FromServer, error) {
 // All implementations must embed UnimplementedChatServer
 // for forward compatibility
 type ChatServer interface {
-	ChatService(Chat_ChatServiceServer) error
+	JoinRoom(context.Context, *JoinRoomRequest) (*JoinRoomReply, error)
+	Say(Chat_SayServer) error
 	mustEmbedUnimplementedChatServer()
 }
 
@@ -80,8 +92,11 @@ type ChatServer interface {
 type UnimplementedChatServer struct {
 }
 
-func (UnimplementedChatServer) ChatService(Chat_ChatServiceServer) error {
-	return status.Errorf(codes.Unimplemented, "method ChatService not implemented")
+func (UnimplementedChatServer) JoinRoom(context.Context, *JoinRoomRequest) (*JoinRoomReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinRoom not implemented")
+}
+func (UnimplementedChatServer) Say(Chat_SayServer) error {
+	return status.Errorf(codes.Unimplemented, "method Say not implemented")
 }
 func (UnimplementedChatServer) mustEmbedUnimplementedChatServer() {}
 
@@ -96,25 +111,43 @@ func RegisterChatServer(s grpc.ServiceRegistrar, srv ChatServer) {
 	s.RegisterService(&Chat_ServiceDesc, srv)
 }
 
-func _Chat_ChatService_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ChatServer).ChatService(&chatChatServiceServer{stream})
+func _Chat_JoinRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServer).JoinRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Chat_JoinRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServer).JoinRoom(ctx, req.(*JoinRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-type Chat_ChatServiceServer interface {
+func _Chat_Say_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ChatServer).Say(&chatSayServer{stream})
+}
+
+type Chat_SayServer interface {
 	Send(*FromServer) error
 	Recv() (*FromClient, error)
 	grpc.ServerStream
 }
 
-type chatChatServiceServer struct {
+type chatSayServer struct {
 	grpc.ServerStream
 }
 
-func (x *chatChatServiceServer) Send(m *FromServer) error {
+func (x *chatSayServer) Send(m *FromServer) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *chatChatServiceServer) Recv() (*FromClient, error) {
+func (x *chatSayServer) Recv() (*FromClient, error) {
 	m := new(FromClient)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -128,11 +161,16 @@ func (x *chatChatServiceServer) Recv() (*FromClient, error) {
 var Chat_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "chat.Chat",
 	HandlerType: (*ChatServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "JoinRoom",
+			Handler:    _Chat_JoinRoom_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "ChatService",
-			Handler:       _Chat_ChatService_Handler,
+			StreamName:    "Say",
+			Handler:       _Chat_Say_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
