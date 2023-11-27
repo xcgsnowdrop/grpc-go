@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "google.golang.org/grpc/examples/chat/chat_v2";
+
+package chat;
+
+// 游戏中一般仅有世界聊天和公会聊天，无需主动加入某个聊天室，直接往目标聊天室发送消息即可，没加入时，自动加入即可
+message ChatMessage {
+  string username = 1;
+  string message = 2;
+  string roomid = 3;
+}
+
+service Chat {
+    rpc SendMessage (stream ChatMessage) returns (stream ChatMessage);
+}
