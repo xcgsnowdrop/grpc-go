@@ -77,6 +77,8 @@ func main() {
 	// including the observability.End() call that ensures any pending
 	// observability data is sent to Cloud Operations.
 	c := make(chan os.Signal, 1)
+	// 使用 signal.Notify() 设置要捕获的信号，os.Interrupt 实际上是 syscall.SIGINT 的别名
+	// Notify 导致 signal 包将传入的信号转发到通道 c。如果没有提供信号，所有传入的信号都将被转发到 c。否则，只会转发提供的信号。
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c

@@ -65,7 +65,7 @@ func main() {
 	// Register Greeter on the server.
 	hwpb.RegisterGreeterServer(s, &hwServer{})
 
-	// Register RouteGuide on the same server.
+	// Register Echo on the same server.
 	ecpb.RegisterEchoServer(s, &ecServer{})
 
 	if err := s.Serve(lis); err != nil {
