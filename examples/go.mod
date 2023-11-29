@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/cncf/xds/go v0.0.0-20230607035331-e9ce68804cb4
 	github.com/golang/protobuf v1.5.3
+	github.com/google/uuid v1.3.1
 	golang.org/x/oauth2 v0.13.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97
 	google.golang.org/grpc v1.58.2
