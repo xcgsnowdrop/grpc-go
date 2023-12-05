@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = "google.golang.org/grpc/examples/chat/chat_v4";
+
+package chat_v4;
+
+message ChatMessage {
+  string username = 1;
+  string message = 2;
+}
+
+message JoinRoomRequest {
+  string username = 1;
+  string roomid = 2;
+}
+
+message JoinRoomReply {
+  string token = 1;
+  string roomid = 2;
+  string uid = 3;
+}
+
+// Wraps multiple message actions.
+message ChatRequest {
+    oneof action {
+        JoinRoomRequest joinRoomRequest = 1;
+        ChatMessage chatMessage = 2;
+    }
+}
+
+message ChatResponse {
+    oneof action {
+        JoinRoomReply joinRoomReply = 1;
+        ChatMessage chatMessage = 2;
+    }
+}
+
+service Chat {
+    rpc JoinRoom (JoinRoomRequest) returns (JoinRoomReply);
+    rpc SendMessage (stream ChatMessage) returns (stream ChatMessage);
+}

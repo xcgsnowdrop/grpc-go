@@ -4,6 +4,8 @@ go 1.19
 
 require (
 	github.com/cncf/xds/go v0.0.0-20230607035331-e9ce68804cb4
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.1
 	golang.org/x/oauth2 v0.13.0
