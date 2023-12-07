@@ -11,6 +11,19 @@ message LoginRequest {
 
 message LoginResponse { string access_token = 1; }
 
+message createUserRequest {
+  string username = 1;
+  string password = 2;
+  string role = 3;
+}
+
+message CreateUserResponse {
+  bool success = 1;
+  // 如果 success 为 false，可以包含错误信息
+  string error_message = 2;
+}
+
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {};
+  rpc CreateUser(createUserRequest) returns (CreateUserResponse) {};
 }

@@ -30,9 +30,9 @@ func accessibleRoles() map[string][]string {
 
 	return map[string][]string{
 		// authServicePath + "Login":        {"admin"},
-		authServicePath + "CreateLaptop": {"admin"},
-		authServicePath + "UploadImage":  {"admin"},
-		authServicePath + "RateLaptop":   {"admin", "user"},
+		authServicePath + "CreateUser":  {"admin"},
+		authServicePath + "UploadImage": {"admin"},
+		authServicePath + "RateLaptop":  {"admin", "user"},
 	}
 }
 

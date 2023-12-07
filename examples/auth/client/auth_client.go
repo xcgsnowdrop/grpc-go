@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"google.golang.org/grpc"
@@ -34,4 +35,25 @@ func (client *AuthClient) Login() (string, error) {
 	}
 
 	return res.GetAccessToken(), nil
+}
+
+func (client *AuthClient) CreateUser(username string, password string, role string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Second)
+	defer cancel()
+
+	req := &pb.CreateUserRequest{
+		Username: username,
+		Password: password,
+		Role:     role,
+	}
+
+	res, err := client.service.CreateUser(ctx, req)
+	if err != nil {
+		return false, err
+	}
+	if res.ErrorMessage != "" {
+		return false, errors.New(res.ErrorMessage)
+	}
+
+	return res.Success, nil
 }

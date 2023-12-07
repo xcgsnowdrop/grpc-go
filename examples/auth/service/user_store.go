@@ -8,6 +8,7 @@ import (
 type UserStore interface {
 	Save(user *User) error
 	Find(username string) (*User, error)
+	CreateUser(username, password, role string) error
 }
 
 type InMemoryUserStore struct {
@@ -43,4 +44,12 @@ func (store *InMemoryUserStore) Find(username string) (*User, error) {
 	}
 
 	return user.Clone(), nil
+}
+
+func (store *InMemoryUserStore) CreateUser(username, password, role string) error {
+	user, err := NewUser(username, password, role)
+	if err != nil {
+		return err
+	}
+	return store.Save(user)
 }

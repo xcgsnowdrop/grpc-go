@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"time"
 
@@ -20,9 +21,9 @@ func authMethods() map[string]bool {
 
 	return map[string]bool{
 		// authServicePath + "Login":        true,
-		authServicePath + "CreateLaptop": true,
-		authServicePath + "UploadImage":  true,
-		authServicePath + "RateLaptop":   true,
+		authServicePath + "CreateUser":  true,
+		authServicePath + "UploadImage": true,
+		authServicePath + "RateLaptop":  true,
 	}
 }
 
@@ -58,6 +59,11 @@ func main() {
 		log.Fatalf("grpc.Dial(%q): %v", *addr, err)
 	}
 	defer conn2.Close()
+
+	// 注意：这里需要用conn2重新创建authClient2，调用CreateUser()才会触发客户端拦截器，因为客户端拦截器设置在conn2上
+	authClient2 := client.NewAuthClient(conn2, username, password)
+	success, err := authClient2.CreateUser("xcg", "123456", "user")
+	fmt.Printf("create user success: %v, err: %v", success, err)
 
 	// 等待通道的值，阻塞主进程
 	done := make(chan bool)
