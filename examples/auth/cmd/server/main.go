@@ -36,20 +36,13 @@ func accessibleRoles() map[string][]string {
 	}
 }
 
-func createUser(userStore service.UserStore, username, password, role string) error {
-	user, err := service.NewUser(username, password, role)
-	if err != nil {
-		return err
-	}
-	return userStore.Save(user)
-}
-
+// 生成初始用户
 func seedUsers(userStore service.UserStore) error {
-	err := createUser(userStore, "admin1", "secret", "admin")
+	err := userStore.CreateUser("admin1", "secret", "admin")
 	if err != nil {
 		return err
 	}
-	return createUser(userStore, "user1", "secret", "user")
+	return userStore.CreateUser("user1", "secret", "user")
 }
 
 func main() {
